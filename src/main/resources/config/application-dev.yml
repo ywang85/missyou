@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/missyou?characterEncoding=utf-8&serverTimezone=GMT%2B8
+    username: root
+    password: wyj931109
+
+  jpa:
+    show-sql: true
+
+missyou:
+  security:
+    jwt-key: wangyijie111
+    token-expired-in: 86400000
