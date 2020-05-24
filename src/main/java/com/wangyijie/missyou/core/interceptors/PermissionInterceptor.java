@@ -41,9 +41,8 @@ public class PermissionInterceptor extends HandlerInterceptorAdapter {
         if (claimMap == null) {
             throw new UnAuthenticatedException(10004);
         }
-        boolean valid = hasPermission(scopeLevel, claimMap);
 
-        return valid;
+        return hasPermission(scopeLevel, claimMap);
     }
 
     @Override
@@ -56,17 +55,17 @@ public class PermissionInterceptor extends HandlerInterceptorAdapter {
         super.afterCompletion(request, response, handler, ex);
     }
 
+    // 获取方法上的注解
     private ScopeLevel getScopeLevel(Object handler) {
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
-            ScopeLevel scopeLevel = handlerMethod.getMethod().getAnnotation(ScopeLevel.class);
-            return scopeLevel;
+            return handlerMethod.getMethod().getAnnotation(ScopeLevel.class);
         }
         return null;
     }
 
     private boolean hasPermission(ScopeLevel scopeLevel, Map<String, Claim> map) {
-        Integer level = scopeLevel.value();
+        int level = scopeLevel.value();
         Integer scope = map.get("scope").asInt();
         if (level > scope) {
             throw new ForbiddenException(10005);
