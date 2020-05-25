@@ -6,6 +6,7 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,21 +14,20 @@ import java.util.Objects;
 @Getter
 @Setter
 @Where(clause = "delete_time is null and online = 1")
-public class Category extends BaseEntity {
+public class Activity extends BaseEntity {
     @Id
     private Long id;
-    private String name;
+    private String title;
     private String description;
-    private Boolean isRoot;
-    private Long parentId;
-    private String img;
-    private Long index;
-    private Long online;
-    private Integer level;
+    private Date startTime;
+    private Date endTime;
+    private String remark;
+    private Byte online;
+    private String entranceImg;
+    private String internalTopImg;
+    private String name;
 
-    @ManyToMany
-    @JoinTable(name = "coupon_category",
-            joinColumns = @JoinColumn(name = "category_id"),
-            inverseJoinColumns = @JoinColumn(name = "coupon_id"))
+    @OneToMany
+    @JoinColumn(name = "activityId")
     private List<Coupon> couponList;
 }
