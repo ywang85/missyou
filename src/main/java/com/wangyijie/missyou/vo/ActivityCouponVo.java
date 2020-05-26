@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public class ActivityCouponVo extends ActivityPureVO {
-    private List<CouponPureVO> couponPureVOList;
+    private List<CouponPureVO> coupons;
 
     public ActivityCouponVo(Activity activity) {
         super(activity);
-        couponPureVOList = activity.getCouponList().stream()
+        coupons = activity.getCouponList().stream()
                 .map(CouponPureVO::new)
 //                .map(c-> {return new CouponPureVO(c);})
                 .collect(Collectors.toList());
