@@ -12,4 +12,13 @@ public enum CouponStatus {
     CouponStatus(Integer value, String description) {
         this.value = value;
     }
+
+    public static CouponStatus toType(int value) {
+        for (CouponStatus c : CouponStatus.values()) {
+            if (c.value == value) {
+                return c;
+            }
+        }
+        return null;
+    }
 }

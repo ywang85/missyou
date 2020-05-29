@@ -65,4 +65,19 @@ public class CouponService {
         userCouponNew.setCreateTime(now);
         userCouponRepository.save(userCouponNew);
     }
+
+    public List<Coupon> getMyAvailableCoupons(Long uid) {
+        Date now = new Date();
+        return couponRepository.findMyAvailable(uid, now);
+    }
+
+    public List<Coupon> getMyUsedCoupons(Long uid) {
+        Date now = new Date();
+        return couponRepository.findMyUsed(uid, now);
+    }
+
+    public List<Coupon> getMyExpiredCoupons(Long uid) {
+        Date now = new Date();
+        return couponRepository.findMyExpired(uid, now);
+    }
 }
