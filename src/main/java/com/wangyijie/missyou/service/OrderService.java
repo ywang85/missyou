@@ -6,12 +6,14 @@ import com.wangyijie.missyou.dto.SkuInfoDTO;
 import com.wangyijie.missyou.exception.http.NotFoundException;
 import com.wangyijie.missyou.exception.http.ParameterException;
 import com.wangyijie.missyou.logic.CouponChecker;
+import com.wangyijie.missyou.logic.OrderChecker;
 import com.wangyijie.missyou.model.Coupon;
 import com.wangyijie.missyou.model.Sku;
 import com.wangyijie.missyou.model.UserCoupon;
 import com.wangyijie.missyou.repository.CouponRepository;
 import com.wangyijie.missyou.repository.UserCouponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -32,7 +34,10 @@ public class OrderService {
     @Autowired
     private IMoneyDiscount iMoneyDiscount;
 
-    public void isOk(Long uid, OrderDTO orderDTO) {
+    @Value("${missyou.order.max-sku-limit}")
+    private int maxSkuLimit;
+
+    public OrderChecker isOk(Long uid, OrderDTO orderDTO) {
         if (orderDTO.getFinalTotalPrice().compareTo(BigDecimal.ZERO) <= 0) {
             throw new ParameterException(50011);
         }
@@ -41,7 +46,7 @@ public class OrderService {
 
         Long couponId = orderDTO.getCouponId();
 
-        CouponChecker couponChecker;
+        CouponChecker couponChecker = null;
         if (couponId != null) {
             Coupon coupon = couponRepository.findById(couponId).orElseThrow(() -> new NotFoundException(40004));
             UserCoupon userCoupon = userCouponRepository.findFirstByUserIdAndCouponId(uid, couponId);
@@ -50,5 +55,8 @@ public class OrderService {
             }
             couponChecker = new CouponChecker(coupon, iMoneyDiscount);
         }
+        OrderChecker orderChecker = new OrderChecker(orderDTO, skuList, couponChecker, maxSkuLimit);
+        orderChecker.isOk();
+        return orderChecker;
     }
 }

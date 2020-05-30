@@ -11,3 +11,5 @@ missyou:
   security:
     jwt-key: wangyijie111
     token-expired-in: 86400000
+  order:
+    max-sku-limit: 777

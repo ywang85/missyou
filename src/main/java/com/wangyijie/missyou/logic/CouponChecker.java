@@ -96,7 +96,7 @@ public class CouponChecker {
 //        return cidList.stream()
 //                .map(cid -> getSumByCategory(skuOrderBOList, cid))
 //                .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
-        BigDecimal sum = BigDecimal.ZERO;
+        BigDecimal sum = new BigDecimal("0");
         for (Long cid : cidList) {
             sum = sum.add(getSumByCategory(skuOrderBOList, cid));
         }
@@ -110,7 +110,7 @@ public class CouponChecker {
 //                .map(SkuOrderBO::getTotalPrice)
 //                .reduce(BigDecimal::add)
 //                .orElse(BigDecimal.ZERO);
-        BigDecimal sum = BigDecimal.ZERO;
+        BigDecimal sum = new BigDecimal("0");
         for (SkuOrderBO skuOrderBO : skuOrderBOList) {
             Long categoryId = skuOrderBO.getCategoryId();
             if (categoryId.equals(cid)) {

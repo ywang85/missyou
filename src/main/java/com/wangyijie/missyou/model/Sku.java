@@ -1,11 +1,13 @@
 package com.wangyijie.missyou.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.wangyijie.missyou.util.GenericAndJson;
 import com.wangyijie.missyou.util.ListAndJson;
 import com.wangyijie.missyou.util.MapAndJson;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -14,10 +16,12 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Entity
 @Setter
 @Getter
+@Where(clause = "delete_time is null and online = 1")
 public class Sku extends BaseEntity {
     @Id
     private Long id;
@@ -56,5 +60,10 @@ public class Sku extends BaseEntity {
             return price;
         }
         return discountPrice;
+    }
+
+    @JsonIgnore
+    public List<String> getSpecValueList() {
+        return getSpecs().stream().map(Spec::getValue).collect(Collectors.toList());
     }
 }
