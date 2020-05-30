@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,7 +48,7 @@ public class OrderService {
             if (userCoupon == null) {
                 throw new NotFoundException(50006);
             }
-            couponChecker = new CouponChecker(coupon, userCoupon, iMoneyDiscount);
+            couponChecker = new CouponChecker(coupon, iMoneyDiscount);
         }
     }
 }
