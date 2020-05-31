@@ -1,5 +1,6 @@
 missyou:
   api-package: com.wangyijie.missyou.api
+  year-codes: A, B, C, D, E, F, G
 
 spring:
   jackson:

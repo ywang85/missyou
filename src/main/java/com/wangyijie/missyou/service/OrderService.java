@@ -1,5 +1,6 @@
 package com.wangyijie.missyou.service;
 
+import com.wangyijie.missyou.core.enumeration.OrderStatus;
 import com.wangyijie.missyou.core.money.IMoneyDiscount;
 import com.wangyijie.missyou.dto.OrderDTO;
 import com.wangyijie.missyou.dto.SkuInfoDTO;
@@ -7,14 +8,16 @@ import com.wangyijie.missyou.exception.http.NotFoundException;
 import com.wangyijie.missyou.exception.http.ParameterException;
 import com.wangyijie.missyou.logic.CouponChecker;
 import com.wangyijie.missyou.logic.OrderChecker;
-import com.wangyijie.missyou.model.Coupon;
-import com.wangyijie.missyou.model.Sku;
-import com.wangyijie.missyou.model.UserCoupon;
+import com.wangyijie.missyou.model.*;
 import com.wangyijie.missyou.repository.CouponRepository;
+import com.wangyijie.missyou.repository.OrderRepository;
+import com.wangyijie.missyou.repository.SkuRepository;
 import com.wangyijie.missyou.repository.UserCouponRepository;
+import com.wangyijie.missyou.util.OrderUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -33,6 +36,14 @@ public class OrderService {
 
     @Autowired
     private IMoneyDiscount iMoneyDiscount;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private SkuRepository skuRepository;
+
+
 
     @Value("${missyou.order.max-sku-limit}")
     private int maxSkuLimit;
@@ -58,5 +69,41 @@ public class OrderService {
         OrderChecker orderChecker = new OrderChecker(orderDTO, skuList, couponChecker, maxSkuLimit);
         orderChecker.isOk();
         return orderChecker;
+    }
+
+    @Transactional
+    public Long placeOrder(Long uid, OrderDTO orderDTO, OrderChecker orderChecker) {
+        Order order = new Order();
+        order.setOrderNo(OrderUtil.makeOrderNo());
+        order.setTotalPrice(orderDTO.getTotalPrice());
+        order.setFinalTotalPrice(orderDTO.getFinalTotalPrice());
+        order.setUserId(uid);
+        order.setTotalCount(orderChecker.getTotalCount().longValue());
+        order.setSnapImg(orderChecker.getLeaderImg());
+        order.setSnapTitle(orderChecker.getLeaderTitle());
+        order.setStatus(OrderStatus.UNPAID.getValue());
+        order.setSnapAddress(orderDTO.getAddress());
+        order.setSnapItems(orderChecker.getOrderSkuList());
+
+        orderRepository.save(order);
+        // 减库存
+        reduceStock(orderChecker);
+        // 核对优惠券
+        // 加入消息队列
+        return order.getId();
+    }
+
+    private void writeOffCoupon(Long couponId, Long oid, Long uid) {
+
+    }
+
+    private void reduceStock(OrderChecker orderChecker) {
+        List<OrderSku> orderSkuList = orderChecker.getOrderSkuList();
+        for (OrderSku orderSku : orderSkuList) {
+            int result = skuRepository.reduceStock(orderSku.getId(), orderSku.getCount().longValue());
+            if (result != 1) {
+                throw new ParameterException(50003);
+            }
+        }
     }
 }

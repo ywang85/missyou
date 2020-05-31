@@ -1,11 +1,15 @@
 package com.wangyijie.missyou.model;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.wangyijie.missyou.dto.OrderAddressDTO;
+import com.wangyijie.missyou.util.GenericAndJson;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Getter
@@ -29,5 +33,25 @@ public class Order extends BaseEntity {
     private BigDecimal finalTotalPrice;
     private Integer status;
 
+    public OrderAddressDTO getSnapAddress() {
+        if (snapAddress == null) {
+            return null;
+        }
+        return GenericAndJson.jsonToObject(snapAddress, new TypeReference<OrderAddressDTO>() {});
+    }
 
+    public void setSnapAddress(OrderAddressDTO address) {
+        snapAddress = GenericAndJson.objectToJson(address);
+    }
+
+    public void setSnapItems(List<OrderSku> orderSkuList) {
+        if (orderSkuList.isEmpty()) {
+            return;
+        }
+        snapItems = GenericAndJson.objectToJson(orderSkuList);
+    }
+
+    public List<OrderSku> getSnapItems() {
+        return GenericAndJson.jsonToObject(snapItems, new TypeReference<List<OrderSku>>(){});
+    }
 }
