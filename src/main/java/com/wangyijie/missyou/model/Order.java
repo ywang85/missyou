@@ -9,6 +9,7 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -24,6 +25,8 @@ public class Order extends BaseEntity {
     private Long userId;
     private BigDecimal totalPrice;
     private Long totalCount;
+    private Date expiredTime;
+    private Date placedTime;
 
     private String snapImg;
     private String snapTitle;

@@ -2,6 +2,7 @@ package com.wangyijie.missyou.util;
 
 import com.wangyijie.missyou.bo.PageCounter;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class CommonUtil {
@@ -16,5 +17,10 @@ public class CommonUtil {
         Long endTime = end.getTime();
 
         return time > startTime && time < endTime;
+    }
+
+    public static Calendar addSomeSeconds(Calendar calendar, int seconds) {
+        calendar.add(Calendar.SECOND, seconds);
+        return calendar;
     }
 }
