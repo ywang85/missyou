@@ -4,11 +4,13 @@ import com.wangyijie.missyou.bo.PageCounter;
 import com.wangyijie.missyou.core.LocalUser;
 import com.wangyijie.missyou.core.interceptors.ScopeLevel;
 import com.wangyijie.missyou.dto.OrderDTO;
+import com.wangyijie.missyou.exception.http.NotFoundException;
 import com.wangyijie.missyou.logic.OrderChecker;
 import com.wangyijie.missyou.model.Order;
 import com.wangyijie.missyou.service.OrderService;
 import com.wangyijie.missyou.util.CommonUtil;
 import com.wangyijie.missyou.vo.OrderIdVO;
+import com.wangyijie.missyou.vo.OrderPureVO;
 import com.wangyijie.missyou.vo.OrderSimplifyVO;
 import com.wangyijie.missyou.vo.PagingDozer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,5 +52,29 @@ public class OrderController {
             ((OrderSimplifyVO) o).setPeriod(payTimeLimit);
         }
         return pagingDozer;
+    }
+
+    @ScopeLevel
+    @GetMapping("/by/status/{status}")
+    public PagingDozer getByStatus(@PathVariable int status,
+                                   @RequestParam(defaultValue = "0") Integer start,
+                                   @RequestParam(defaultValue = "10") Integer count) {
+        PageCounter page = CommonUtil.convertToPageParameter(start, count);
+        Page<Order> orderPage = orderService.getByStatus(status, page.getPage(), page.getCount());
+        PagingDozer<Order, OrderSimplifyVO> pagingDozer = new PagingDozer<>(orderPage, OrderSimplifyVO.class);
+        for (Object o : pagingDozer.getItems()) {
+            ((OrderSimplifyVO) o).setPeriod(payTimeLimit);
+        }
+        return pagingDozer;
+    }
+
+    @ScopeLevel
+    @GetMapping("/detail/{id}")
+    public OrderPureVO getOrderDetail(@PathVariable(name = "id") Long oid) {
+        Order order = orderService.getOrderDetail(oid);
+        if (order == null) {
+            throw new NotFoundException(50009);
+        }
+        return new OrderPureVO(order, payTimeLimit);
     }
 }

@@ -28,10 +28,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -117,6 +117,29 @@ public class OrderService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createTime").descending());
         Long uid = LocalUser.getUser().getId();
         return orderRepository.findByExpiredTimeGreaterThanAndStatusAndUserId(new Date(), OrderStatus.UNPAID.getValue(), uid, pageable);
+    }
+
+    public Page<Order> getByStatus(Integer status, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createTime").descending());
+        Long uid = LocalUser.getUser().getId();
+        if (status == OrderStatus.ALL.getValue()) {
+            return orderRepository.findByUserId(uid, pageable);
+        }
+        return orderRepository.findByUserIdAndStatus(uid, status, pageable);
+    }
+
+    public Order getOrderDetail(Long oid) {
+        Long uid = LocalUser.getUser().getId();
+        return orderRepository.findFirstByUserIdAndId(uid, oid);
+    }
+
+    public void updateOrderPrepayId(Long orderId, String prePayId) {
+        Optional<Order> order = orderRepository.findById(orderId);
+        order.ifPresent(o -> {
+            o.setPrepayId(prePayId);
+            orderRepository.save(o);
+        });
+        order.orElseThrow(() -> new ParameterException(10007));
     }
 
     private void writeOffCoupon(Long couponId, Long oid, Long uid) {

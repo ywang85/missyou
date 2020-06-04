@@ -18,6 +18,10 @@ public class OrderSku {
     private String img;
     private String title;
 
+    public OrderSku() {
+
+    }
+
     public OrderSku(SkuInfoDTO skuInfoDTO, Sku sku) {
         id = sku.getId();
         spuId = sku.getSpuId();

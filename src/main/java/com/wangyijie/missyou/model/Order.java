@@ -1,7 +1,9 @@
 package com.wangyijie.missyou.model;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.wangyijie.missyou.core.enumeration.OrderStatus;
 import com.wangyijie.missyou.dto.OrderAddressDTO;
+import com.wangyijie.missyou.util.CommonUtil;
 import com.wangyijie.missyou.util.GenericAndJson;
 import lombok.Getter;
 import lombok.Setter;
@@ -56,5 +58,12 @@ public class Order extends BaseEntity {
 
     public List<OrderSku> getSnapItems() {
         return GenericAndJson.jsonToObject(snapItems, new TypeReference<List<OrderSku>>(){});
+    }
+
+    public Boolean needCancel() {
+        if (status == OrderStatus.UNPAID.getValue()) {
+            return true;
+        }
+        return CommonUtil.isOutOfDate(expiredTime);
     }
 }

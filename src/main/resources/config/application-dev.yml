@@ -14,3 +14,5 @@ missyou:
   order:
     max-sku-limit: 777
     pay-time-limit: 3600
+    pay-callback-host: http://wangyijie11.natapp1.cc
+    pay-callback-path: /v1/payment/wx/notify
