@@ -89,6 +89,7 @@ public class WxPaymentService {
     }
 
     private boolean unifiedOrderSuccess(Map<String, String> wxOrder) {
+        // openid和appid不匹配
         if (!wxOrder.get("return_code").equals("SUCCESS") || !wxOrder.get("result_code").equals("SUCCESS")) {
             throw new ParameterException(10007);
         }
@@ -103,7 +104,7 @@ public class WxPaymentService {
         data.put("fee_type", "CNY");
         data.put("trade_type", "JSAPI");
         data.put("total_fee", CommonUtil.yuanToFenPlainString(serverFinalPrice));
-        data.put("open_id", LocalUser.getUser().getOpenid());
+        data.put("openid", LocalUser.getUser().getOpenid());
         data.put("spbill_create_ip", HttpRequestProxy.getRemoteRealIp());
         data.put("notify_url", payCallbackHost + payCallbackPath);
         return data;

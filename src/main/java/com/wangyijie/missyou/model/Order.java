@@ -61,7 +61,7 @@ public class Order extends BaseEntity {
     }
 
     public Boolean needCancel() {
-        if (status == OrderStatus.UNPAID.getValue()) {
+        if (status != OrderStatus.UNPAID.getValue()) {
             return true;
         }
         return CommonUtil.isOutOfDate(expiredTime);

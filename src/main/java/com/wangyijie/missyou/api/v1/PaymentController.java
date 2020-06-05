@@ -2,6 +2,7 @@ package com.wangyijie.missyou.api.v1;
 
 import com.wangyijie.missyou.core.interceptors.ScopeLevel;
 import com.wangyijie.missyou.lib.WxNotify;
+import com.wangyijie.missyou.service.WxPaymentNotifyService;
 import com.wangyijie.missyou.service.WxPaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +24,9 @@ public class PaymentController {
     @Autowired
     private WxPaymentService wxPaymentService;
 
+    @Autowired
+    private WxPaymentNotifyService wxPaymentNotifyService;
+
     @PostMapping("/pay/order/{id}")
     @ScopeLevel
     public Map<String, String> preWxOrder(@PathVariable(name = "id") @Positive Long oid) {
@@ -40,7 +44,11 @@ public class PaymentController {
         }
         String xml;
         xml = WxNotify.readNotify(s);
-
-        return null;
+        try {
+            wxPaymentNotifyService.processPayNotify(xml);
+        } catch (Exception e) {
+            return WxNotify.fail();
+        }
+        return WxNotify.success();
     }
 }
