@@ -18,4 +18,10 @@ public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
     int writeOff(Long couponId, Long oid, Long uid);
 
     UserCoupon findFirstByUserIdAndCouponId(Long uid, Long couponId);
+
+    @Modifying
+    @Query("update UserCoupon uc set uc.status = 1, uc.orderId = null " +
+            "where uc.couponId = :couponId and uc.userId = :uid" +
+            " and uc.orderId is not null and uc.status = 2")
+    int returnBack(Long couponId, Long uid);
 }
